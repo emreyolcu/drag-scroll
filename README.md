@@ -10,7 +10,7 @@ You may download the binary
 [here](https://github.com/emreyolcu/pixel-scroll/releases/download/v0.1.0/PixelScroll.zip). It
 runs in the background and does not interfere until mouse button 4 is pressed.
 
-If you want this to run automatically at boot you may go to `System Preferences
-> Users & Groups > Login Items` and add `PixelScroll` to the list. If you want
+If you want this to run automatically at boot you may go to `System Preferences > Users & Groups > Login Items`
+and add `PixelScroll` to the list. If you want
 to undo the effect you may launch Activity Monitor, search for `PixelScroll`
 and force it to quit.
