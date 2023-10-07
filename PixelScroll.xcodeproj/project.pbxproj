@@ -7,13 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		C3FC4D7920B9CA1900E1BE93 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = C3FC4D7820B9CA1900E1BE93 /* main.m */; };
+		C3FC4D7920B9CA1900E1BE93 /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = C3FC4D7820B9CA1900E1BE93 /* main.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		C3FC4D7020B9CA1900E1BE93 /* PixelScroll.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PixelScroll.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C3FC4D7420B9CA1900E1BE93 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		C3FC4D7820B9CA1900E1BE93 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		C3FC4D7820B9CA1900E1BE93 /* main.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -47,7 +47,7 @@
 			isa = PBXGroup;
 			children = (
 				C3FC4D7420B9CA1900E1BE93 /* Info.plist */,
-				C3FC4D7820B9CA1900E1BE93 /* main.m */,
+				C3FC4D7820B9CA1900E1BE93 /* main.c */,
 			);
 			path = PixelScroll;
 			sourceTree = "<group>";
@@ -119,7 +119,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C3FC4D7920B9CA1900E1BE93 /* main.m in Sources */,
+				C3FC4D7920B9CA1900E1BE93 /* main.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

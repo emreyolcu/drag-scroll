@@ -1,4 +1,4 @@
-#import <ApplicationServices/ApplicationServices.h>
+#include <ApplicationServices/ApplicationServices.h>
 
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 
@@ -37,8 +37,7 @@ CGEventRef cgEventCallback(CGEventTapProxy proxy, CGEventType type, CGEventRef e
                 int32_t deltaY = (int32_t)CGEventGetIntegerValueField(event, kCGMouseEventDeltaY);
                 
                 CGEventSourceRef source = CGEventSourceCreate(kCGEventSourceStateCombinedSessionState);
-                CGEventRef scrollEvent = CGEventCreateScrollWheelEvent(source, kCGScrollEventUnitPixel, 2,
-                                                                       -SCALE * deltaY, -SCALE * deltaX);
+                CGEventRef scrollEvent = CGEventCreateScrollWheelEvent(source, kCGScrollEventUnitPixel, 2, -SCALE * deltaY, -SCALE * deltaX);
                 
                 CGEventPost(kCGSessionEventTap, scrollEvent);
                 
