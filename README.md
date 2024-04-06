@@ -2,7 +2,7 @@
 
 [![Downloads](https://img.shields.io/github/downloads/emreyolcu/drag-scroll/total.svg)](https://github.com/emreyolcu/drag-scroll/releases)
 
-This small utility provides a toggleable drag and scroll mechanism for macOS.
+This small utility provides a toggleable drag-to-scroll mechanism for macOS.
 It is especially useful with a trackball
 where you can press mouse button 4 and roll the ball
 to scroll through a large website or a document.
