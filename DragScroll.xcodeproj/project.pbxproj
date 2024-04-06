@@ -11,7 +11,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		C3FC4D7020B9CA1900E1BE93 /* PixelScroll.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PixelScroll.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		C3FC4D7020B9CA1900E1BE93 /* DragScroll.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DragScroll.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C3FC4D7420B9CA1900E1BE93 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C3FC4D7820B9CA1900E1BE93 /* main.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -30,7 +30,7 @@
 		C3FC4D6720B9CA1900E1BE93 = {
 			isa = PBXGroup;
 			children = (
-				C3FC4D7220B9CA1900E1BE93 /* PixelScroll */,
+				C3FC4D7220B9CA1900E1BE93 /* DragScroll */,
 				C3FC4D7120B9CA1900E1BE93 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -38,26 +38,26 @@
 		C3FC4D7120B9CA1900E1BE93 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				C3FC4D7020B9CA1900E1BE93 /* PixelScroll.app */,
+				C3FC4D7020B9CA1900E1BE93 /* DragScroll.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		C3FC4D7220B9CA1900E1BE93 /* PixelScroll */ = {
+		C3FC4D7220B9CA1900E1BE93 /* DragScroll */ = {
 			isa = PBXGroup;
 			children = (
 				C3FC4D7420B9CA1900E1BE93 /* Info.plist */,
 				C3FC4D7820B9CA1900E1BE93 /* main.c */,
 			);
-			path = PixelScroll;
+			path = DragScroll;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		C3FC4D6F20B9CA1900E1BE93 /* PixelScroll */ = {
+		C3FC4D6F20B9CA1900E1BE93 /* DragScroll */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = C3FC4D8D20B9CA1A00E1BE93 /* Build configuration list for PBXNativeTarget "PixelScroll" */;
+			buildConfigurationList = C3FC4D8D20B9CA1A00E1BE93 /* Build configuration list for PBXNativeTarget "DragScroll" */;
 			buildPhases = (
 				C3FC4D6C20B9CA1900E1BE93 /* Sources */,
 				C3FC4D6D20B9CA1900E1BE93 /* Frameworks */,
@@ -67,9 +67,9 @@
 			);
 			dependencies = (
 			);
-			name = PixelScroll;
-			productName = PixelScroll;
-			productReference = C3FC4D7020B9CA1900E1BE93 /* PixelScroll.app */;
+			name = DragScroll;
+			productName = DragScroll;
+			productReference = C3FC4D7020B9CA1900E1BE93 /* DragScroll.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -86,7 +86,7 @@
 					};
 				};
 			};
-			buildConfigurationList = C3FC4D6B20B9CA1900E1BE93 /* Build configuration list for PBXProject "PixelScroll" */;
+			buildConfigurationList = C3FC4D6B20B9CA1900E1BE93 /* Build configuration list for PBXProject "DragScroll" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -99,7 +99,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				C3FC4D6F20B9CA1900E1BE93 /* PixelScroll */,
+				C3FC4D6F20B9CA1900E1BE93 /* DragScroll */,
 			);
 		};
 /* End PBXProject section */
@@ -207,7 +207,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				COMBINE_HIDPI_IMAGES = YES;
-				INFOPLIST_FILE = PixelScroll/Info.plist;
+				INFOPLIST_FILE = DragScroll/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -218,7 +218,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				COMBINE_HIDPI_IMAGES = YES;
-				INFOPLIST_FILE = PixelScroll/Info.plist;
+				INFOPLIST_FILE = DragScroll/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -227,7 +227,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		C3FC4D6B20B9CA1900E1BE93 /* Build configuration list for PBXProject "PixelScroll" */ = {
+		C3FC4D6B20B9CA1900E1BE93 /* Build configuration list for PBXProject "DragScroll" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				C3FC4D8B20B9CA1A00E1BE93 /* Debug */,
@@ -236,7 +236,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		C3FC4D8D20B9CA1A00E1BE93 /* Build configuration list for PBXNativeTarget "PixelScroll" */ = {
+		C3FC4D8D20B9CA1A00E1BE93 /* Build configuration list for PBXNativeTarget "DragScroll" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				C3FC4D8E20B9CA1A00E1BE93 /* Debug */,
