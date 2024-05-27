@@ -1,79 +1,109 @@
 #include <ApplicationServices/ApplicationServices.h>
 
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+static int BUTTON;
+static int SCALE;
 
-#define SCALE 3
-#define BUTTON 4
+static bool ENABLED = false;
+static CGPoint POINT;
 
-bool enabled = false;
-CGPoint savedPoint;
-
-CGEventRef cgEventCallback(CGEventTapProxy proxy, CGEventType type, CGEventRef event, void *refcon)
+CGEventRef callback(CGEventTapProxy proxy, CGEventType type, CGEventRef event, void *userInfo)
 {
-    switch (type) {
-        case kCGEventOtherMouseDown:
-            if ((int32_t)CGEventGetIntegerValueField(event, kCGMouseEventButtonNumber) == BUTTON) {
-                enabled = !enabled;
-                savedPoint = CGEventGetLocation(event);
-                
-                if (enabled) {
-                    CGSetLocalEventsSuppressionInterval(10.0);
-                    CGWarpMouseCursorPosition(savedPoint);
-                }
-                else {
-                    CGSetLocalEventsSuppressionInterval(0.0);
-                    CGWarpMouseCursorPosition(savedPoint);
-                    CGSetLocalEventsSuppressionInterval(0.25);
-                }
-                
-                return NULL;
-            }
-            
-            break;
-            
-        case kCGEventMouseMoved:
-            if (enabled) {
-                int32_t deltaX = (int32_t)CGEventGetIntegerValueField(event, kCGMouseEventDeltaX);
-                int32_t deltaY = (int32_t)CGEventGetIntegerValueField(event, kCGMouseEventDeltaY);
-                
-                CGEventSourceRef source = CGEventSourceCreate(kCGEventSourceStateCombinedSessionState);
-                CGEventRef scrollEvent = CGEventCreateScrollWheelEvent(source, kCGScrollEventUnitPixel, 2, -SCALE * deltaY, -SCALE * deltaX);
-                
-                CGEventPost(kCGSessionEventTap, scrollEvent);
-                
-                CFRelease(scrollEvent);
-                CFRelease(source);
-                
-                CGWarpMouseCursorPosition(savedPoint);
-                
-                return event;
-            }
-            
-            break;
-            
-        default:
-            break;
+    if (type == kCGEventOtherMouseDown
+        && CGEventGetIntegerValueField(event, kCGMouseEventButtonNumber) == BUTTON) {
+        ENABLED = !ENABLED;
+        POINT = CGEventGetLocation(event);
+
+        if (ENABLED) {
+            CGWarpMouseCursorPosition(POINT);
+        } else {
+            CGEventSourceRef source = CGEventSourceCreate(kCGEventSourceStateCombinedSessionState);
+            CGEventSourceSetLocalEventsSuppressionInterval(source, 0.0);
+            CGWarpMouseCursorPosition(POINT);
+            CGEventSourceSetLocalEventsSuppressionInterval(source, 0.25);
+            CFRelease(source);
+        }
+
+        event = NULL;
+    } else if (type == kCGEventMouseMoved && ENABLED) {
+        int64_t deltaX = CGEventGetIntegerValueField(event, kCGMouseEventDeltaX);
+        int64_t deltaY = CGEventGetIntegerValueField(event, kCGMouseEventDeltaY);
+        CGEventSourceRef source = CGEventSourceCreate(kCGEventSourceStateCombinedSessionState);
+        CGEventRef scrollWheelEvent = CGEventCreateScrollWheelEvent(
+            source,
+            kCGScrollEventUnitPixel, 2, -SCALE * (int32_t)deltaY, -SCALE * (int32_t)deltaX
+        );
+        CGEventPost(kCGHeadInsertEventTap, scrollWheelEvent);
+        CFRelease(source);
+        CFRelease(scrollWheelEvent);
+
+        CGWarpMouseCursorPosition(POINT);
+
+        event = NULL;
     }
-    
+
     return event;
+}
+
+void displayNoticeAndExit(CFStringRef alertHeader)
+{
+    CFUserNotificationDisplayNotice(
+        0, kCFUserNotificationCautionAlertLevel,
+        NULL, NULL, NULL,
+        alertHeader, NULL, NULL
+    );
+
+    exit(EXIT_FAILURE);
+}
+
+void setIntPreference(CFStringRef key, int *valuePtr, int defaultValue)
+{
+    CFNumberRef value = (CFNumberRef)CFPreferencesCopyAppValue(
+        key, kCFPreferencesCurrentApplication
+    );
+    Boolean got = false;
+    if (value) {
+        got = CFNumberGetValue(value, kCFNumberIntType, valuePtr);
+        CFRelease(value);
+    }
+    if (!got)
+        *valuePtr = defaultValue;
 }
 
 int main(void)
 {
-    CFMachPortRef eventTap;
-    CFRunLoopSourceRef runLoopSource;
-    
-    CGEventMask mask = CGEventMaskBit(kCGEventMouseMoved) | CGEventMaskBit(kCGEventOtherMouseDown);
-    
-    eventTap = CGEventTapCreate(kCGSessionEventTap, kCGHeadInsertEventTap, 0, mask, cgEventCallback, NULL);
-    runLoopSource = CFMachPortCreateRunLoopSource(kCFAllocatorDefault, eventTap, 0);
-    
-    CFRunLoopAddSource(CFRunLoopGetCurrent(), runLoopSource, kCFRunLoopCommonModes);
-    CGEventTapEnable(eventTap, true);
+    CFDictionaryRef options = CFDictionaryCreate(
+        kCFAllocatorDefault,
+        (const void **)&kAXTrustedCheckOptionPrompt, (const void **)&kCFBooleanTrue, 1,
+        &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks
+    );
+    Boolean trusted = AXIsProcessTrustedWithOptions(options);
+    CFRelease(options);
+    if (!trusted)
+        displayNoticeAndExit(
+            CFSTR("Restart DragScroll after granting it access to accessibility features.")
+        );
+
+    setIntPreference(CFSTR("button"), &BUTTON, 4);
+    if (BUTTON < 2 || BUTTON > 31)
+        displayNoticeAndExit(
+            CFSTR("DragScroll supports up to 32 mouse buttons. "
+                  "Set \"button\" to a value between 2 and 31.")
+        );
+    setIntPreference(CFSTR("scale"), &SCALE, 3);
+
+    CFMachPortRef tap = CGEventTapCreate(
+        kCGSessionEventTap, kCGHeadInsertEventTap, kCGEventTapOptionDefault,
+        CGEventMaskBit(kCGEventOtherMouseDown) | CGEventMaskBit(kCGEventMouseMoved), callback, NULL
+    );
+    if (!tap)
+        displayNoticeAndExit(CFSTR("DragScroll could not create an event tap."));
+    CFRunLoopSourceRef source = CFMachPortCreateRunLoopSource(kCFAllocatorDefault, tap, 0);
+    if (!source)
+        displayNoticeAndExit(CFSTR("DragScroll could not create a run loop source."));
+    CFRunLoopAddSource(CFRunLoopGetCurrent(), source, kCFRunLoopDefaultMode);
+    CFRelease(tap);
+    CFRelease(source);
     CFRunLoopRun();
-    
-    CFRelease(eventTap);
-    CFRelease(runLoopSource);
-    
-    return 0;
+
+    return EXIT_SUCCESS;
 }
