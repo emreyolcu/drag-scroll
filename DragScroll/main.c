@@ -6,6 +6,12 @@
 #define MAX_KEY_COUNT 5
 #define EQ(x, y) (CFStringCompare(x, y, kCFCompareCaseInsensitive) == kCFCompareEqualTo)
 
+static const CFStringRef AX_NOTIFICATION = CFSTR("com.apple.accessibility.api");
+static bool TRUSTED;
+
+static CFMachPortRef TAP;
+static CFRunLoopSourceRef SOURCE;
+
 static int BUTTON;
 static int KEYS;
 static int SCALE;
@@ -14,10 +20,10 @@ static bool BUTTON_ENABLED;
 static bool KEY_ENABLED;
 static CGPoint POINT;
 
-void maybeSetAndWarp(bool thisEnabled, bool otherEnabled, CGPoint location)
+static void maybeSetPointAndWarpMouse(bool thisEnabled, bool otherEnabled, CGEventRef event)
 {
     if (!otherEnabled) {
-        POINT = location;
+        POINT = CGEventGetLocation(event);
         CGEventSourceRef source = CGEventSourceCreate(kCGEventSourceStateCombinedSessionState);
         if (thisEnabled) {
             CGEventSourceSetLocalEventsSuppressionInterval(source, 10.0);
@@ -31,7 +37,8 @@ void maybeSetAndWarp(bool thisEnabled, bool otherEnabled, CGPoint location)
     }
 }
 
-CGEventRef callback(CGEventTapProxy proxy, CGEventType type, CGEventRef event, void *userInfo)
+static CGEventRef tapCallback(CGEventTapProxy proxy,
+                              CGEventType type, CGEventRef event, void *userInfo)
 {
     if (type == kCGEventMouseMoved && (BUTTON_ENABLED || KEY_ENABLED)) {
         int deltaX = (int)CGEventGetIntegerValueField(event, kCGMouseEventDeltaX);
@@ -49,17 +56,17 @@ CGEventRef callback(CGEventTapProxy proxy, CGEventType type, CGEventRef event, v
                && CGEventGetFlags(event) == 0
                && CGEventGetIntegerValueField(event, kCGMouseEventButtonNumber) == BUTTON) {
         BUTTON_ENABLED = !BUTTON_ENABLED;
-        maybeSetAndWarp(BUTTON_ENABLED, KEY_ENABLED, CGEventGetLocation(event));
+        maybeSetPointAndWarpMouse(BUTTON_ENABLED, KEY_ENABLED, event);
         event = NULL;
     } else if (type == kCGEventFlagsChanged) {
         KEY_ENABLED = (CGEventGetFlags(event) & KEYS) == KEYS;
-        maybeSetAndWarp(KEY_ENABLED, BUTTON_ENABLED, CGEventGetLocation(event));
+        maybeSetPointAndWarpMouse(KEY_ENABLED, BUTTON_ENABLED, event);
     }
 
     return event;
 }
 
-void displayNoticeAndExit(CFStringRef alertHeader)
+static void displayNoticeAndExit(CFStringRef alertHeader)
 {
     CFUserNotificationDisplayNotice(
         0, kCFUserNotificationCautionAlertLevel,
@@ -70,7 +77,30 @@ void displayNoticeAndExit(CFStringRef alertHeader)
     exit(EXIT_FAILURE);
 }
 
-bool getIntPreference(CFStringRef key, int *valuePtr)
+static void notificationCallback(CFNotificationCenterRef center, void *observer,
+                                 CFNotificationName name, const void *object,
+                                 CFDictionaryRef userInfo)
+{
+    if (CFStringCompare(name, AX_NOTIFICATION, 0) == kCFCompareEqualTo) {
+        CFRunLoopRef runLoop = CFRunLoopGetCurrent();
+        CFRunLoopPerformBlock(
+            runLoop, kCFRunLoopDefaultMode, ^{
+                bool previouslyTrusted = TRUSTED;
+                if ((TRUSTED = AXIsProcessTrusted()) != previouslyTrusted) {
+                    CFRunLoopStop(runLoop);
+                    if (SOURCE && CFRunLoopContainsSource(runLoop, SOURCE, kCFRunLoopDefaultMode)) {
+                        CGEventTapEnable(TAP, TRUSTED);
+                        CFRunLoopRun();
+                    } else if (!TRUSTED) {
+                        CFRunLoopRun();
+                    }
+                }
+            }
+        );
+    }
+}
+
+static bool getIntPreference(CFStringRef key, int *valuePtr)
 {
     CFNumberRef number = (CFNumberRef)CFPreferencesCopyAppValue(
         key, kCFPreferencesCurrentApplication
@@ -85,7 +115,7 @@ bool getIntPreference(CFStringRef key, int *valuePtr)
     return got;
 }
 
-bool getArrayPreference(CFStringRef key, CFStringRef *values, int *count, int maxCount)
+static bool getArrayPreference(CFStringRef key, CFStringRef *values, int *count, int maxCount)
 {
     CFArrayRef array = (CFArrayRef)CFPreferencesCopyAppValue(
         key, kCFPreferencesCurrentApplication
@@ -108,36 +138,39 @@ bool getArrayPreference(CFStringRef key, CFStringRef *values, int *count, int ma
 
 int main(void)
 {
+    CFNotificationCenterAddObserver(
+        CFNotificationCenterGetDistributedCenter(), NULL,
+        notificationCallback, AX_NOTIFICATION, NULL,
+        CFNotificationSuspensionBehaviorDeliverImmediately
+    );
     CFDictionaryRef options = CFDictionaryCreate(
         kCFAllocatorDefault,
         (const void **)&kAXTrustedCheckOptionPrompt, (const void **)&kCFBooleanTrue, 1,
         &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks
     );
-    bool trusted = AXIsProcessTrustedWithOptions(options);
+    TRUSTED = AXIsProcessTrustedWithOptions(options);
     CFRelease(options);
-    if (!trusted)
-        displayNoticeAndExit(
-            CFSTR("Restart DragScroll after granting it access to accessibility features.")
-        );
+    if (!TRUSTED)
+        CFRunLoopRun();
 
     if (!(getIntPreference(CFSTR("button"), &BUTTON)
           && (BUTTON == 0 || (BUTTON >= 3 && BUTTON <= 32))))
         BUTTON = DEFAULT_BUTTON;
 
-    CFStringRef names[MAX_KEY_COUNT];
-    int count;
-    if (getArrayPreference(CFSTR("keys"), names, &count, MAX_KEY_COUNT)) {
+    CFStringRef keyNames[MAX_KEY_COUNT];
+    int keyCount;
+    if (getArrayPreference(CFSTR("keys"), keyNames, &keyCount, MAX_KEY_COUNT)) {
         KEYS = 0;
-        for (int i = 0; i < count; i++) {
-            if (EQ(names[i], CFSTR("capslock"))) {
+        for (int i = 0; i < keyCount; i++) {
+            if (EQ(keyNames[i], CFSTR("capslock"))) {
                 KEYS |= kCGEventFlagMaskAlphaShift;
-            } else if (EQ(names[i], CFSTR("shift"))) {
+            } else if (EQ(keyNames[i], CFSTR("shift"))) {
                 KEYS |= kCGEventFlagMaskShift;
-            } else if (EQ(names[i], CFSTR("control"))) {
+            } else if (EQ(keyNames[i], CFSTR("control"))) {
                 KEYS |= kCGEventFlagMaskControl;
-            } else if (EQ(names[i], CFSTR("option"))) {
+            } else if (EQ(keyNames[i], CFSTR("option"))) {
                 KEYS |= kCGEventFlagMaskAlternate;
-            } else if (EQ(names[i], CFSTR("command"))) {
+            } else if (EQ(keyNames[i], CFSTR("command"))) {
                 KEYS |= kCGEventFlagMaskCommand;
             } else {
                 KEYS = DEFAULT_KEYS;
@@ -158,18 +191,16 @@ int main(void)
     }
     if (KEYS != 0)
         events |= CGEventMaskBit(kCGEventFlagsChanged);
-    CFMachPortRef tap = CGEventTapCreate(
+    TAP = CGEventTapCreate(
         kCGSessionEventTap, kCGHeadInsertEventTap, kCGEventTapOptionDefault,
-        events, callback, NULL
+        events, tapCallback, NULL
     );
-    if (!tap)
+    if (!TAP)
         displayNoticeAndExit(CFSTR("DragScroll could not create an event tap."));
-    CFRunLoopSourceRef source = CFMachPortCreateRunLoopSource(kCFAllocatorDefault, tap, 0);
-    if (!source)
+    SOURCE = CFMachPortCreateRunLoopSource(kCFAllocatorDefault, TAP, 0);
+    if (!SOURCE)
         displayNoticeAndExit(CFSTR("DragScroll could not create a run loop source."));
-    CFRunLoopAddSource(CFRunLoopGetCurrent(), source, kCFRunLoopDefaultMode);
-    CFRelease(tap);
-    CFRelease(source);
+    CFRunLoopAddSource(CFRunLoopGetCurrent(), SOURCE, kCFRunLoopDefaultMode);
     CFRunLoopRun();
 
     return EXIT_SUCCESS;

@@ -31,16 +31,28 @@ As of May 2024, this application works on macOS versions 10.9–14.0.
 
 ### Installation
 
-You may download the binary [here](https://github.com/emreyolcu/drag-scroll/releases/download/v1.1.0/DragScroll.zip).
+You may download the binary [here](https://github.com/emreyolcu/drag-scroll/releases/download/v1.2.0/DragScroll.zip).
+DragScroll requires access to accessibility features.
+Upon startup, if it does not have access, it will prompt you and wait.
+You do not need to restart the application
+after you grant it access to accessibility features.
 
-It needs to be run each time you boot.
-If you want this to be automatic, do the following:
+> [!CAUTION]
+> You may safely toggle accessibility access
+> for DragScroll while it is running.
+> *However, you should not remove it from the list of trusted applications
+> while it is running without first unchecking the box next to its name.
+> Otherwise, your mouse might become unresponsive.*
+
+If you want the application to run automatically when you log in,
+do the following:
 
 1. On macOS 13.0 and later, go to `System Settings > General > Login Items`;
    otherwise, go to `System Preferences > Users & Groups > Login Items`.
 2. Add `DragScroll` to the list.
 
-If you want to quit the application, do the following:
+If you want to quit the application, either run `killall DragScroll`
+or do the following:
 
 1. Launch `Activity Monitor`.
 2. Search for `DragScroll` and select it.
@@ -99,6 +111,16 @@ If you want to quit the application, do the following:
 > then its default value is used as a fallback.
 
 You should restart the application for these settings to take effect.
+
+### Uninstallation
+
+To uninstall DragScroll, quit the application, move it to trash,
+and remove it from the lists for accessibility access and login items.
+You can remove any stored preferences by running the following:
+
+```
+defaults delete com.emreyolcu.DragScroll
+```
 
 ### Potential problems
 
