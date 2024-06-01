@@ -12,7 +12,7 @@ and mouse movement is interpreted as scrolling.
 Pressing the mouse button again or releasing the modifier keys
 deactivates drag scrolling mode.
 
-This utility is especially useful with a trackball:
+This application is especially useful with a trackball:
 you can activate drag scrolling and roll the ball
 to quickly scroll through a large website or a document.
 It also works with the trackpad, for instance allowing you
@@ -42,7 +42,7 @@ after you grant it access to accessibility features.
 > for DragScroll while it is running.
 > *However, you should not remove it from the list of trusted applications
 > while it is running without first unchecking the box next to its name.
-> Otherwise, your mouse might become unresponsive.*
+> Otherwise, your mouse might become unresponsive, requiring a reboot to fix.*
 
 If you want the application to run automatically when you log in,
 do the following:
@@ -60,7 +60,8 @@ or do the following:
 
 ### Configuration
 
-- The default mouse button for toggling drag scrolling is button 5.
+- **Mouse button**:
+  The default mouse button for toggling drag scrolling is button 5.
   If you want to use a different mouse button, run the following command,
   replacing `BUTTON` with a button number between 3 and 32.
   (Button numbers are one-based,
@@ -74,7 +75,8 @@ or do the following:
   If you do not want to use mouse buttons with DragScroll,
   set `button` to 0.
 
-- The default modifier key for activating drag scrolling is the Shift key.
+- **Modifier keys**:
+  The default modifier key for activating drag scrolling is the Shift key.
   If you want to use a different set of modifiers, run the following command,
   replacing `[KEYS...]` by a space-separated set of modifier keys
   chosen from among `capslock`, `shift`, `control`, `option`, `command`.
@@ -98,7 +100,8 @@ or do the following:
   defaults write com.emreyolcu.DragScroll keys -array
   ```
 
-- If you want to change scrolling speed, run the following command,
+- **Scrolling speed:**
+  If you want to change scrolling speed, run the following command,
   replacing `SCALE` with a small number (default is 3).
   This number may even be negative, which inverts scrolling direction.
 
