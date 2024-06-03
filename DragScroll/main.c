@@ -2,7 +2,7 @@
 
 #define DEFAULT_BUTTON 5
 #define DEFAULT_KEYS kCGEventFlagMaskShift
-#define DEFAULT_SCALE 3
+#define DEFAULT_SPEED 3
 #define MAX_KEY_COUNT 5
 #define EQ(x, y) (CFStringCompare(x, y, kCFCompareCaseInsensitive) == kCFCompareEqualTo)
 
@@ -11,7 +11,7 @@ static bool TRUSTED;
 
 static int BUTTON;
 static int KEYS;
-static int SCALE;
+static int SPEED;
 
 static bool BUTTON_ENABLED;
 static bool KEY_ENABLED;
@@ -41,7 +41,7 @@ static CGEventRef tapCallback(CGEventTapProxy proxy,
         int deltaX = (int)CGEventGetIntegerValueField(event, kCGMouseEventDeltaX);
         int deltaY = (int)CGEventGetIntegerValueField(event, kCGMouseEventDeltaY);
         CGEventRef scrollWheelEvent = CGEventCreateScrollWheelEvent(
-            NULL, kCGScrollEventUnitPixel, 2, -SCALE * deltaY, -SCALE * deltaX
+            NULL, kCGScrollEventUnitPixel, 2, -SPEED * deltaY, -SPEED * deltaX
         );
         if (KEY_ENABLED)
             CGEventSetFlags(scrollWheelEvent, CGEventGetFlags(event) & ~KEYS);
@@ -171,8 +171,8 @@ int main(void)
         KEYS = DEFAULT_KEYS;
     }
 
-    if (!getIntPreference(CFSTR("scale"), &SCALE))
-        SCALE = DEFAULT_SCALE;
+    if (!getIntPreference(CFSTR("speed"), &SPEED))
+        SPEED = DEFAULT_SPEED;
 
     CGEventMask events = CGEventMaskBit(kCGEventMouseMoved);
     if (BUTTON != 0) {

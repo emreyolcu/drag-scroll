@@ -100,11 +100,11 @@ or do the following:
 
 - **Scrolling speed:**
   If you want to change scrolling speed, run the following command,
-  replacing `SCALE` with a small number (default is 3).
+  replacing `SPEED` with a small number (default is 3).
   This number may even be negative, which inverts scrolling direction.
 
   ```
-  defaults write com.emreyolcu.DragScroll scale -int SCALE
+  defaults write com.emreyolcu.DragScroll speed -int SPEED
   ```
 
 > [!WARNING]
