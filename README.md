@@ -142,3 +142,28 @@ even though you have previously granted it access, try the following:
 1. On macOS 13.0 and later, go to `System Settings > Privacy & Security > Accessibility`;
    otherwise, go to `System Preferences > Security & Privacy > Privacy > Accessibility`.
 2. Remove `DragScroll` from the list and add it again.
+
+### History
+
+#### v1.3.0 (2024-06-02)
+
+- Change "scale" to "speed".
+- Remove accessibility observer once granted access.
+
+#### v1.2.0 (2024-05-31)
+
+- Observe changes in accessibility access continuously.
+
+#### v1.1.0 (2024-05-29)
+
+- Allow using modifier keys in addition to mouse buttons.
+
+#### v1.0.0 (2024-05-27)
+
+- Handle errors and check for accessibility access.
+- Allow configuring the toggle button and scrolling speed.
+- Rename project from "PixelScroll" to "DragScroll".
+
+#### v0.1.0 (2018-05-26)
+
+- Initial release.
