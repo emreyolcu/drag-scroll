@@ -31,7 +31,7 @@ As of May 2024, this application works on macOS versions 10.9–14.0.
 
 ### Installation
 
-You may download the binary [here](https://github.com/emreyolcu/drag-scroll/releases/download/v1.2.0/DragScroll.zip).
+You may download the binary [here](https://github.com/emreyolcu/drag-scroll/releases/download/v1.3.1/DragScroll.zip).
 DragScroll requires access to accessibility features.
 Upon startup, if it does not have access, it will prompt you and wait.
 You do not need to restart the application
@@ -144,6 +144,10 @@ even though you have previously granted it access, try the following:
 2. Remove `DragScroll` from the list and add it again.
 
 ### History
+
+#### v1.3.1 (2024-06-05)
+
+- **Fix:** Release event tap and run loop source after adding source.
 
 #### v1.3.0 (2024-06-02)
 
