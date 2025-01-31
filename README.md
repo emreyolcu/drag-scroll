@@ -19,7 +19,7 @@ It also works with the trackpad, for instance allowing you
 to drag scroll with a single finger
 while holding down the modifier keys.
 
-> [!NOTE]
+> **Note:**
 > The two means of activation operate independently of each other:
 > if you first press the mouse button to activate
 > and then press and release the modifier keys,
@@ -31,13 +31,13 @@ As of May 2024, this application works on macOS versions 10.9–14.0.
 
 ### Installation
 
-You may download the binary [here](https://github.com/emreyolcu/drag-scroll/releases/download/v1.3.1/DragScroll.zip).
+You may download the binary [here](https://github.com/emreyolcu/drag-scroll/releases/latest/download/DragScroll.zip).
 DragScroll requires access to accessibility features.
 Upon startup, if it does not have access, it will prompt you and wait.
 You do not need to restart the application
 after you grant it access to accessibility features.
 
-> [!CAUTION]
+> **Caution:**
 > You should not revoke accessibility access
 > for DragScroll while it is running.
 > Otherwise, your mouse might become unresponsive, requiring a reboot to fix.
@@ -59,7 +59,7 @@ or do the following:
 ### Configuration
 
 - **Mouse button**:
-  The default mouse button for toggling drag scrolling is button 5.
+  The default mouse button for toggling drag scrolling is button 3 (the middle one).
   If you want to use a different mouse button, run the following command,
   replacing `BUTTON` with a button number between 3 and 32.
   (Button numbers are one-based,
@@ -98,6 +98,19 @@ or do the following:
   defaults write com.emreyolcu.DragScroll keys -array
   ```
 
+- **Legacy button hold behaviour:** 
+  By default, DragScroll uses a modern, intuitive button hold behavior introduced in **v1.4.0**. If you prefer the legacy button hold behavior, run the following command:
+
+  ```
+  defaults write com.emreyolcu.DragScroll legacy_button_hold_behaviour -bool true
+  ```
+
+  To revert to the modern button hold behaviour, run:
+
+  ```
+  defaults write com.emreyolcu.DragScroll legacy_button_hold_behaviour -bool false
+  ```
+
 - **Scrolling speed:**
   If you want to change scrolling speed, run the following command,
   replacing `SPEED` with a small number (default is 3).
@@ -107,7 +120,7 @@ or do the following:
   defaults write com.emreyolcu.DragScroll speed -int SPEED
   ```
 
-> [!WARNING]
+> **Warning:**
 > If you set a preference to an unexpected value (e.g., of the wrong type),
 > then its default value is used as a fallback.
 
@@ -144,6 +157,10 @@ even though you have previously granted it access, try the following:
 2. Remove `DragScroll` from the list and add it again.
 
 ### History
+
+#### v1.4.0 (31.01.2025)
+
+- Added the ability to scroll by holding a button and handle single clicks separately.
 
 #### v1.3.1 (2024-06-05)
 
