@@ -3,6 +3,7 @@
 #define DEFAULT_BUTTON 5
 #define DEFAULT_KEYS kCGEventFlagMaskShift
 #define DEFAULT_SPEED 3
+#define DEFAULT_TOGGLE 1
 #define MAX_KEY_COUNT 5
 #define EQ(x, y) (CFStringCompare(x, y, kCFCompareCaseInsensitive) == kCFCompareEqualTo)
 
@@ -12,6 +13,7 @@ static bool TRUSTED;
 static int BUTTON;
 static int KEYS;
 static int SPEED;
+static int TOGGLE;
 
 static bool BUTTON_ENABLED;
 static bool KEY_ENABLED;
@@ -54,11 +56,11 @@ static CGEventRef tapCallback(CGEventTapProxy proxy,
     } else if (type == kCGEventOtherMouseDown
                && CGEventGetFlags(event) == 0
                && CGEventGetIntegerValueField(event, kCGMouseEventButtonNumber) == BUTTON) {
-        BUTTON_ENABLED = !BUTTON_ENABLED;
+        BUTTON_ENABLED = TOGGLE ? !BUTTON_ENABLED : true;
         maybeSetPointAndWarpMouse(BUTTON_ENABLED, KEY_ENABLED, event);
         MOUSE_MOVED = false;
         event = NULL;
-    } else if (MOUSE_MOVED && type == kCGEventOtherMouseUp
+    } else if ((TOGGLE ? MOUSE_MOVED : true) && type == kCGEventOtherMouseUp
                && CGEventGetFlags(event) == 0
                && CGEventGetIntegerValueField(event, kCGMouseEventButtonNumber) == BUTTON) {
         BUTTON_ENABLED = false;
@@ -182,6 +184,9 @@ int main(void)
 
     if (!getIntPreference(CFSTR("speed"), &SPEED))
         SPEED = DEFAULT_SPEED;
+
+    if (!getIntPreference(CFSTR("toggle"), &TOGGLE))
+        TOGGLE = DEFAULT_TOGGLE;
 
     CGEventMask events = CGEventMaskBit(kCGEventMouseMoved);
     if (BUTTON != 0) {
